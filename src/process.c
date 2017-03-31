@@ -205,7 +205,7 @@ mrb_value
 mrb_f_system(mrb_state *mrb, mrb_value klass)
 {
   int ret;
-  mrb_value *argv, pname;
+  mrb_value *argv, pname, env = mrb_nil_value();
   const char *path;
   mrb_int argc;
   void (*chfunc)(int);
@@ -218,7 +218,17 @@ mrb_f_system(mrb_state *mrb, mrb_value klass)
     mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong number of arguments");
   }
 
-  pname = argv[0];
+  if (mrb_hash_p(argv[0]) && argc >= 2) {
+    env = argv[0];
+    pname = argv[1];
+    argc -= 1;
+    argv += 1;
+  } else {
+    pname = argv[0];
+  }
+
+  /* TODO: handle env hash */
+
   path = mrb_string_value_cstr(mrb, &pname);
 
   chfunc = signal(SIGCHLD, SIG_DFL);
