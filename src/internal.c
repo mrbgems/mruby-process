@@ -114,14 +114,14 @@ mrb_execarg_fill(mrb_state *mrb, mrb_value env, mrb_value *argv, mrb_int argc, m
         result = (char **)mrb_malloc(mrb, sizeof(char *) * (argc + 3));
 
     #if defined(__APPLE__) || defined(__linux__)
+        static char default_shell[] = "/bin/sh", default_shell_mod[] = "-c";
         shell = getenv("SHELL");
-        if (!shell) shell = strdup("bin/sh");
-        shell_mod = strdup("-c");
     #else
+        static char default_shell[] = "C:\\WINDOWS\\system32\\cmd.exe", default_shell_mod[] = "/c";
         shell = getenv("ComSpec");
-        if (!shell) shell = strdup("C:\\WINDOWS\\system32\\cmd.exe");
-        shell_mod = strdup("/c");
     #endif
+        if (!shell) shell = default_shell;
+        shell_mod = default_shell_mod;
         mrb_build_shell_array(mrb, argv, argc, shell, shell_mod, result);
         argc+=2;
     }
